@@ -1,0 +1,18 @@
+{
+  "name": "Liber",
+  "short_name": "Liber",
+  "description": "A simple, minimal e-reader for EPUB and PDF.",
+  "start_url": "index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

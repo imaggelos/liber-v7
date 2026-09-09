@@ -1,0 +1,24 @@
+{
+  "name": "liber",
+  "version": "1.0.0",
+  "description": "Liber — a simple, minimal, offline-first e-reader for EPUB and PDF.",
+  "private": true,
+  "scripts": {
+    "prepare-libs": "node scripts/copy-libs.js",
+    "serve": "npx http-server www -p 8080 -c-1",
+    "cap:sync": "npm run prepare-libs && npx cap sync android",
+    "cap:open": "npx cap open android"
+  },
+  "dependencies": {
+    "@capacitor/app": "^6.0.1",
+    "epubjs": "^0.3.93",
+    "jszip": "^3.10.1",
+    "pdfjs-dist": "^4.0.379"
+  },
+  "devDependencies": {
+    "@capacitor/android": "^6.1.2",
+    "@capacitor/cli": "^6.1.2",
+    "@capacitor/core": "^6.1.2",
+    "http-server": "^14.1.1"
+  }
+}

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+<title>Liber</title>
+<meta name="theme-color" content="#000000" />
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" href="icons/icon.svg" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- LIBRARY VIEW -->
+<section id="view-library" class="view active">
+  <header class="topbar">
+    <h1 class="brand">Liber</h1>
+    <button id="btn-add" class="icon-btn" aria-label="Add book" title="Add book">
+      <svg viewBox="0 0 24 24"><path d="M19 13H13V19H11V13H5V11H11V5H13V11H19V13Z"/></svg>
+    </button>
+  </header>
+
+  <input id="file-input" type="file" accept=".epub,.pdf,application/epub+zip,application/pdf" multiple hidden />
+
+  <div id="empty-state" class="empty-state">
+    <svg viewBox="0 0 24 24" class="empty-icon"><path d="M12 21.5C10.65 20.15 8.2 19 6 19C4.95 19 3.95 19.2 3.05 19.55C3.02 19.55 3 19.55 3 19.55C2.75 19.55 2.55 19.35 2.55 19.1V6.1C2.55 5.95 2.65 5.8 2.8 5.75C3.8 5.3 4.9 5 6 5C8.2 5 10.65 5.9 12 7C13.35 5.9 15.8 5 18 5C19.1 5 20.2 5.3 21.2 5.75C21.35 5.8 21.45 5.95 21.45 6.1V19.1C21.45 19.35 21.25 19.55 21 19.55C20.98 19.55 20.95 19.55 20.95 19.55C20.05 19.2 19.05 19 18 19C15.8 19 13.35 20.15 12 21.5Z"/></svg>
+    <p>Your library is empty.</p>
+    <p class="muted">Tap + to add an EPUB or PDF.</p>
+  </div>
+
+  <div id="shelf" class="shelf"></div>
+</section>
+
+<!-- READER VIEW -->
+<section id="view-reader" class="view">
+  <header class="topbar reader-bar">
+    <button id="btn-back" class="icon-btn" aria-label="Back to library">
+      <svg viewBox="0 0 24 24"><path d="M20 11H7.83L13.42 5.41L12 4L4 12L12 20L13.41 18.59L7.83 13H20V11Z"/></svg>
+    </button>
+    <span id="reader-title" class="reader-title"></span>
+    <button id="btn-theme" class="icon-btn" aria-label="Toggle light/dark reading theme" title="Toggle theme">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18V4c4.42 0 8 3.58 8 8s-3.58 8-8 8z"/></svg>
+    </button>
+    <button id="btn-toc" class="icon-btn" aria-label="Contents">
+      <svg viewBox="0 0 24 24"><path d="M3 5H21V7H3V5M3 11H21V13H3V11M3 17H21V19H3V17Z"/></svg>
+    </button>
+  </header>
+
+  <div id="epub-viewer" class="reader-surface"></div>
+  <div id="pdf-viewer" class="reader-surface pdf-scroll" hidden></div>
+
+  <nav class="reader-nav">
+    <button id="btn-prev" class="icon-btn" aria-label="Previous page">
+      <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6L8 12L14 18L15.41 16.59L10.83 12L15.41 7.41Z"/></svg>
+    </button>
+    <span id="reader-progress" class="muted small"></span>
+    <button id="btn-next" class="icon-btn" aria-label="Next page">
+      <svg viewBox="0 0 24 24"><path d="M8.59 16.59L10 18L16 12L10 6L8.59 7.41L13.17 12L8.59 16.59Z"/></svg>
+    </button>
+  </nav>
+
+  <aside id="toc-panel" class="toc-panel" hidden>
+    <div class="toc-header">
+      <span>Contents</span>
+      <button id="btn-toc-close" class="icon-btn" aria-label="Close">
+        <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z"/></svg>
+      </button>
+    </div>
+    <ul id="toc-list"></ul>
+  </aside>
+</section>
+
+<div id="toast" class="toast" hidden></div>
+
+<!-- Local, vendored libraries (populated by scripts/copy-libs.js) -->
+<script src="lib/jszip.min.js"></script>
+<script src="lib/epub.min.js"></script>
+
+<!-- pdfjs-dist ships as an ES module only, so it's loaded via dynamic import
+     rather than a classic global script. Anything that needs pdfjsLib should
+     `await window.LiberPdfjsReady` first. -->
+<script type="module">
+  window.LiberPdfjsReady = import("./lib/pdf.min.js")
+    .then((mod) => {
+      window.pdfjsLib = mod;
+      if (mod.GlobalWorkerOptions) {
+        mod.GlobalWorkerOptions.workerSrc = "lib/pdf.worker.min.js";
+      }
+      return mod;
+    })
+    .catch((err) => {
+      console.error("Liber: failed to load pdf.js", err);
+    });
+</script>
+
+<script src="js/db.js"></script>
+<script src="js/reader-epub.js"></script>
+<script src="js/reader-pdf.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

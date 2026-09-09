@@ -1,0 +1,14 @@
+{
+  "appId": "com.aggelos.liber",
+  "appName": "Liber",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "backgroundColor": "#000000",
+  "android": {
+    "allowMixedContent": false,
+    "backgroundColor": "#000000"
+  },
+  "server": {
+    "androidScheme": "https"
+  }
+}

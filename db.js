@@ -1,0 +1,84 @@
+/* Liber.DB — minimal IndexedDB wrapper. Stores book blobs + metadata + reading progress. */
+(function () {
+  const DB_NAME = "liber-db";
+  const DB_VERSION = 1;
+  const STORE = "books";
+
+  let dbPromise = null;
+
+  function open() {
+    if (dbPromise) return dbPromise;
+    dbPromise = new Promise((resolve, reject) => {
+      const req = indexedDB.open(DB_NAME, DB_VERSION);
+      req.onupgradeneeded = () => {
+        const db = req.result;
+        if (!db.objectStoreNames.contains(STORE)) {
+          const store = db.createObjectStore(STORE, { keyPath: "id" });
+          store.createIndex("addedAt", "addedAt");
+        }
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+    return dbPromise;
+  }
+
+  async function tx(mode) {
+    const db = await open();
+    return db.transaction(STORE, mode).objectStore(STORE);
+  }
+
+  async function addBook(book) {
+    const store = await tx("readwrite");
+    return new Promise((resolve, reject) => {
+      const req = store.add(book);
+      req.onsuccess = () => resolve(book);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  async function updateBook(id, patch) {
+    const store = await tx("readwrite");
+    return new Promise((resolve, reject) => {
+      const getReq = store.get(id);
+      getReq.onsuccess = () => {
+        const existing = getReq.result;
+        if (!existing) return resolve(null);
+        const updated = Object.assign(existing, patch);
+        const putReq = store.put(updated);
+        putReq.onsuccess = () => resolve(updated);
+        putReq.onerror = () => reject(putReq.error);
+      };
+      getReq.onerror = () => reject(getReq.error);
+    });
+  }
+
+  async function getBook(id) {
+    const store = await tx("readonly");
+    return new Promise((resolve, reject) => {
+      const req = store.get(id);
+      req.onsuccess = () => resolve(req.result || null);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  async function getAllBooks() {
+    const store = await tx("readonly");
+    return new Promise((resolve, reject) => {
+      const req = store.getAll();
+      req.onsuccess = () => resolve(req.result || []);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  async function deleteBook(id) {
+    const store = await tx("readwrite");
+    return new Promise((resolve, reject) => {
+      const req = store.delete(id);
+      req.onsuccess = () => resolve(true);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  window.LiberDB = { addBook, updateBook, getBook, getAllBooks, deleteBook };
+})();
