@@ -234,15 +234,6 @@
     renderLibrary();
   }
 
-  function readerNext() {
-    if (!activeBook) return;
-    activeBook.format === "epub" ? LiberEpubReader.next() : LiberPdfReader.next();
-  }
-  function readerPrev() {
-    if (!activeBook) return;
-    activeBook.format === "epub" ? LiberEpubReader.prev() : LiberPdfReader.prev();
-  }
-
   // Wire up UI
   document.getElementById("btn-add").addEventListener("click", () => fileInput.click());
   fileInput.addEventListener("change", (e) => {
@@ -250,8 +241,6 @@
     fileInput.value = "";
   });
   document.getElementById("btn-back").addEventListener("click", closeReader);
-  document.getElementById("btn-next").addEventListener("click", readerNext);
-  document.getElementById("btn-prev").addEventListener("click", readerPrev);
   document.getElementById("btn-toc").addEventListener("click", () => {
     tocPanel.hidden = !tocPanel.hidden;
   });
@@ -274,32 +263,6 @@
     viewReader.classList.toggle("chrome-hidden");
   }
   document.addEventListener("liber:tap", toggleChrome);
-
-  // Basic swipe / tap zones on the reader surface for page turns
-  const readerSurfaceParent = viewReader;
-  let touchStartX = null;
-  let swipeMultiTouch = false;
-  readerSurfaceParent.addEventListener("touchstart", (e) => {
-    if (e.touches.length > 1) {
-      swipeMultiTouch = true;
-      touchStartX = null;
-      return;
-    }
-    swipeMultiTouch = false;
-    touchStartX = e.touches[0].clientX;
-  });
-  readerSurfaceParent.addEventListener("touchend", (e) => {
-    if (swipeMultiTouch || touchStartX === null) {
-      swipeMultiTouch = false;
-      touchStartX = null;
-      return;
-    }
-    const dx = e.changedTouches[0].clientX - touchStartX;
-    if (Math.abs(dx) > 50) {
-      dx < 0 ? readerNext() : readerPrev();
-    }
-    touchStartX = null;
-  });
 
   // Android hardware back button: return to the library instead of exiting
   // the app. Only present inside the actual Capacitor Android app — no-ops
