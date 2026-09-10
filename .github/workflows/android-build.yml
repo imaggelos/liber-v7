@@ -26,6 +26,9 @@ jobs:
       - name: Install npm dependencies
         run: npm install
 
+      - name: Generate app icons
+        run: npx @capacitor/assets generate --android
+
       - name: Vendor epub.js / pdf.js locally (offline-first)
         run: npm run prepare-libs
 
