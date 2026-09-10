@@ -205,26 +205,75 @@
   }
 
   async function renderPage(wrapper) {
-    wrapper.rendered = true; // set early so we don't queue it twice
-    const page = await pdfDoc.getPage(wrapper.pageNum);
-    const viewport = page.getViewport({ scale });
-    const canvas = document.createElement("canvas");
-    canvas.width = viewport.width;
-    canvas.height = viewport.height;
-    // The wrapper's placeholder height was already set from the same
-    // getViewport() math in computePageHeights(), so this should be a
-    // no-op — only touch it if it's actually different, to avoid any
-    // needless style recalculation while pages are loading in mid-scroll.
-    const h = viewport.height + "px";
-    if (wrapper.el.style.height !== h) wrapper.el.style.height = h;
-    wrapper.el.innerHTML = "";
-    wrapper.el.appendChild(canvas);
-    const ctx = canvas.getContext("2d");
-    try {
-      await page.render({ canvasContext: ctx, viewport }).promise;
-    } catch (e) {
-      /* page may have been cancelled by a fast scroll/zoom; harmless */
+  wrapper.rendered = true;
+
+  // Preserve the user's viewport while the page's canvas is inserted.
+  // Android WebView can change scrollTop when DOM children are replaced
+  // inside an actively scrolling container.
+  const rootRectBefore = container.getBoundingClientRect();
+
+  let anchor = null;
+  let anchorTopBefore = null;
+
+  // Pick the page currently underneath the user's reading position.
+  const probe = container.scrollTop + container.clientHeight * 0.35;
+
+  for (const candidate of pageWrappers) {
+    const top = topWithin(candidate.el);
+    const bottom = top + candidate.el.offsetHeight;
+
+    if (top <= probe && bottom > probe) {
+      anchor = candidate;
+      anchorTopBefore =
+        anchor.el.getBoundingClientRect().top - rootRectBefore.top;
+      break;
     }
+  }
+
+  const page = await pdfDoc.getPage(wrapper.pageNum);
+  const viewport = page.getViewport({ scale });
+
+  const canvas = document.createElement("canvas");
+  canvas.width = viewport.width;
+  canvas.height = viewport.height;
+
+  // Keep the placeholder exactly the same size as the real rendered page.
+  const h = viewport.height + "px";
+
+  if (wrapper.el.style.height !== h) {
+    wrapper.el.style.height = h;
+  }
+
+  // Replace only this page's contents.
+  wrapper.el.replaceChildren(canvas);
+
+  // Wait for the browser to finish the layout change, then compensate for
+  // any scroll movement caused by that DOM change.
+  requestAnimationFrame(() => {
+    if (!container || !anchor || !anchor.el.isConnected) return;
+
+    const rootRectAfter = container.getBoundingClientRect();
+
+    const anchorTopAfter =
+      anchor.el.getBoundingClientRect().top - rootRectAfter.top;
+
+    const layoutDelta = anchorTopAfter - anchorTopBefore;
+
+    if (Math.abs(layoutDelta) > 0.5) {
+      container.scrollTop += layoutDelta;
+    }
+  });
+
+  const ctx = canvas.getContext("2d");
+
+  try {
+    await page.render({
+      canvasContext: ctx,
+      viewport,
+    }).promise;
+  } catch (e) {
+    // Page may have been cancelled by a fast scroll/zoom; harmless.
+  }
   }
 
   function currentVisiblePage() {
