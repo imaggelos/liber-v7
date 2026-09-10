@@ -19,7 +19,7 @@
     "@capacitor/android": "^6.1.2",
     "@capacitor/cli": "^6.1.2",
     "@capacitor/core": "^6.1.2",
-    "@capacitor/assets": "^3.0.5"
+    "@capacitor/assets": "^3.0.5",
     "http-server": "^14.1.1"
   }
 }
