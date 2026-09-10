@@ -13,22 +13,235 @@
 
 <!-- LIBRARY VIEW -->
 <section id="view-library" class="view active">
+
   <header class="topbar">
     <h1 class="brand">Liber</h1>
+
     <button id="btn-add" class="icon-btn" aria-label="Add book" title="Add book">
-      <svg viewBox="0 0 24 24"><path d="M19 13H13V19H11V13H5V11H11V5H13V11H19V13Z"/></svg>
+      <svg viewBox="0 0 24 24">
+        <path d="M19 13H13V19H11V13H5V11H11V5H13V11H19V13Z"/>
+      </svg>
     </button>
   </header>
 
-  <input id="file-input" type="file" accept=".epub,.pdf,application/epub+zip,application/pdf" multiple hidden />
+  <input
+    id="file-input"
+    type="file"
+    accept=".epub,.pdf,application/epub+zip,application/pdf"
+    multiple
+    hidden
+  />
 
-  <div id="empty-state" class="empty-state">
-    <svg viewBox="0 0 24 24" class="empty-icon"><path d="M12 21.5C10.65 20.15 8.2 19 6 19C4.95 19 3.95 19.2 3.05 19.55C3.02 19.55 3 19.55 3 19.55C2.75 19.55 2.55 19.35 2.55 19.1V6.1C2.55 5.95 2.65 5.8 2.8 5.75C3.8 5.3 4.9 5 6 5C8.2 5 10.65 5.9 12 7C13.35 5.9 15.8 5 18 5C19.1 5 20.2 5.3 21.2 5.75C21.35 5.8 21.45 5.95 21.45 6.1V19.1C21.45 19.35 21.25 19.55 21 19.55C20.98 19.55 20.95 19.55 20.95 19.55C20.05 19.2 19.05 19 18 19C15.8 19 13.35 20.15 12 21.5Z"/></svg>
-    <p>Your library is empty.</p>
-    <p class="muted">Tap + to add an EPUB or PDF.</p>
+  <!-- HOME -->
+  <main id="home-content" class="library-content">
+
+    <section class="book-section" id="continue-section">
+      <h2>Continue Reading</h2>
+
+      <div id="continue-shelf" class="home-shelf"></div>
+
+      <p id="continue-empty" class="section-empty">
+        Nothing here yet.
+      </p>
+    </section>
+
+    <section class="book-section" id="tbr-section">
+      <h2>TBR</h2>
+
+      <div id="tbr-shelf" class="home-shelf"></div>
+
+      <p id="tbr-empty" class="section-empty">
+        Nothing here yet.
+      </p>
+    </section>
+
+  </main>
+
+
+  <!-- ALL BOOKS LIBRARY -->
+  <main id="all-library" class="library-content" hidden>
+
+    <h2 class="library-heading">Library</h2>
+
+    <div id="library-bookshelf" class="bookshelf"></div>
+
+    <p id="library-empty" class="section-empty">
+      Your library is empty.
+    </p>
+
+  </main>
+
+
+  <!-- BOTTOM NAVIGATION -->
+  <nav class="bottom-nav">
+
+    <button
+      id="nav-home"
+      class="bottom-nav-btn active"
+    >
+      Home
+    </button>
+
+    <button
+      id="nav-library"
+      class="bottom-nav-btn"
+    >
+      Library
+    </button>
+
+  </nav>
+
+
+  <!-- BOOK SETTINGS MODAL -->
+  <div
+    id="book-settings"
+    class="modal-backdrop"
+    hidden
+  >
+
+    <div class="book-settings-modal">
+
+      <div class="modal-header">
+
+        <h2>Book Settings</h2>
+
+        <button
+          id="settings-close"
+          class="icon-btn"
+          aria-label="Close"
+        >
+          <svg viewBox="0 0 24 24">
+            <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L6 7.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 6.41Z"/>
+          </svg>
+        </button>
+
+      </div>
+
+
+      <!-- COVER -->
+
+      <div class="settings-cover-wrap">
+
+        <div
+          id="settings-cover"
+          class="settings-cover"
+        ></div>
+
+        <button
+          id="change-cover"
+          class="secondary-btn"
+        >
+          Change Cover
+        </button>
+
+        <input
+          id="cover-input"
+          type="file"
+          accept="image/*"
+          hidden
+        />
+
+      </div>
+
+
+      <!-- TITLE -->
+
+      <label class="settings-field">
+
+        <span>Title</span>
+
+        <input
+          id="settings-title"
+          type="text"
+        />
+
+      </label>
+
+
+      <!-- AUTHOR -->
+
+      <label class="settings-field">
+
+        <span>Author</span>
+
+        <input
+          id="settings-author"
+          type="text"
+        />
+
+      </label>
+
+
+      <!-- STATUS -->
+
+      <div class="status-group">
+
+        <span class="settings-label">
+          Status
+        </span>
+
+        <label class="status-option">
+          <input
+            type="radio"
+            name="book-status"
+            value="reading"
+          />
+          <span>Continue Reading</span>
+        </label>
+
+        <label class="status-option">
+          <input
+            type="radio"
+            name="book-status"
+            value="tbr"
+          />
+          <span>TBR</span>
+        </label>
+
+        <label class="status-option">
+          <input
+            type="radio"
+            name="book-status"
+            value="finished"
+          />
+          <span>Finished</span>
+        </label>
+
+        <label class="status-option">
+          <input
+            type="radio"
+            name="book-status"
+            value="dropped"
+          />
+          <span>Dropped</span>
+        </label>
+
+      </div>
+
+
+      <!-- SAVE -->
+
+      <button
+        id="settings-save"
+        class="primary-btn"
+      >
+        Save
+      </button>
+
+
+      <!-- DELETE -->
+
+      <button
+        id="settings-delete"
+        class="danger-btn"
+      >
+        Remove from Library
+      </button>
+
+    </div>
+
   </div>
 
-  <div id="shelf" class="shelf"></div>
 </section>
 
 <!-- READER VIEW -->
