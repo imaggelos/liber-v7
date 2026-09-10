@@ -1,5 +1,5 @@
 /* Liber service worker — cache-first app shell for offline-first use. */
-const CACHE_NAME = "liber-shell-v5";
+const CACHE_NAME = "liber-shell-v6";
 
 const SHELL_FILES = [
   "index.html",
