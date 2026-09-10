@@ -207,29 +207,6 @@
   async function renderPage(wrapper) {
   wrapper.rendered = true;
 
-  // Preserve the user's viewport while the page's canvas is inserted.
-  // Android WebView can change scrollTop when DOM children are replaced
-  // inside an actively scrolling container.
-  const rootRectBefore = container.getBoundingClientRect();
-
-  let anchor = null;
-  let anchorTopBefore = null;
-
-  // Pick the page currently underneath the user's reading position.
-  const probe = container.scrollTop + container.clientHeight * 0.35;
-
-  for (const candidate of pageWrappers) {
-    const top = topWithin(candidate.el);
-    const bottom = top + candidate.el.offsetHeight;
-
-    if (top <= probe && bottom > probe) {
-      anchor = candidate;
-      anchorTopBefore =
-        anchor.el.getBoundingClientRect().top - rootRectBefore.top;
-      break;
-    }
-  }
-
   const page = await pdfDoc.getPage(wrapper.pageNum);
   const viewport = page.getViewport({ scale });
 
@@ -237,32 +214,25 @@
   canvas.width = viewport.width;
   canvas.height = viewport.height;
 
-  // Keep the placeholder exactly the same size as the real rendered page.
   const h = viewport.height + "px";
 
   if (wrapper.el.style.height !== h) {
     wrapper.el.style.height = h;
   }
 
+  // IMPORTANT:
+  // Take the scroll position immediately before changing the DOM.
+  // Do NOT capture it before the await above, because the user may
+  // manually scroll while the PDF page is loading.
+  const scrollTopBefore = container.scrollTop;
+
   // Replace only this page's contents.
   wrapper.el.replaceChildren(canvas);
 
-  // Wait for the browser to finish the layout change, then compensate for
-  // any scroll movement caused by that DOM change.
-  requestAnimationFrame(() => {
-    if (!container || !anchor || !anchor.el.isConnected) return;
-
-    const rootRectAfter = container.getBoundingClientRect();
-
-    const anchorTopAfter =
-      anchor.el.getBoundingClientRect().top - rootRectAfter.top;
-
-    const layoutDelta = anchorTopAfter - anchorTopBefore;
-
-    if (Math.abs(layoutDelta) > 0.5) {
-      container.scrollTop += layoutDelta;
-    }
-  });
+  // Restore the position immediately if the DOM mutation changed it.
+  if (container.scrollTop !== scrollTopBefore) {
+    container.scrollTop = scrollTopBefore;
+  }
 
   const ctx = canvas.getContext("2d");
 
