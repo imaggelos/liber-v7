@@ -784,30 +784,61 @@
     libraryEmpty.hidden =
       true;
 
-    books.forEach(
-      (book) => {
+        /*
+     * Build real shelf rows instead of creating one row per book.
+     * The number of books per row follows the actual screen width.
+     */
+    const cardWidth =
+      window.innerWidth >= 700
+        ? 125
+        : 110;
 
-        const shelfRow =
-          document.createElement(
-            "div"
-          );
+    const cardGap = 12;
 
-        shelfRow.className =
-          "bookshelf-row";
+    const availableWidth =
+      Math.max(
+        1,
+        libraryBookshelf.clientWidth - 16
+      );
 
+    const booksPerRow =
+      Math.max(
+        1,
+        Math.floor(
+          (availableWidth + cardGap) /
+          (cardWidth + cardGap)
+        )
+      );
 
-        const card =
-          createBookCard(
-            book
-          );
+    for (
+      let i = 0;
+      i < books.length;
+      i += booksPerRow
+    ) {
 
-        shelfRow.appendChild(
-          card
+      const shelfRow =
+        document.createElement(
+          "div"
         );
 
-        libraryBookshelf.appendChild(
-          shelfRow
+      shelfRow.className =
+        "bookshelf-row";
+
+      books
+        .slice(i, i + booksPerRow)
+        .forEach(
+          (book) => {
+            shelfRow.appendChild(
+              createBookCard(book)
+            );
+          }
         );
+
+      libraryBookshelf.appendChild(
+        shelfRow
+      );
+
+    }
 
       }
     );
