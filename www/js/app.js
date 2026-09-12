@@ -766,7 +766,7 @@
      LIBRARY BOOKSHELF
      ================================ */
 
-  function fillBookshelf(
+    function fillBookshelf(
     books
   ) {
 
@@ -785,10 +785,6 @@
     libraryEmpty.hidden =
       true;
 
-        /*
-     * Build real shelf rows instead of creating one row per book.
-     * The number of books per row follows the actual screen width.
-     */
     const cardWidth =
       window.innerWidth >= 700
         ? 125
@@ -829,9 +825,11 @@
         .slice(i, i + booksPerRow)
         .forEach(
           (book) => {
+
             shelfRow.appendChild(
               createBookCard(book)
             );
+
           }
         );
 
@@ -841,9 +839,7 @@
 
     }
 
-      }
-    );
-  }
+    }
 
 
   /* ================================
