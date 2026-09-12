@@ -25,6 +25,15 @@
   const tbrEmpty =
     document.getElementById("tbr-empty");
 
+  const homeEmpty =
+    document.getElementById("home-empty");
+
+  const continueSection =
+    document.getElementById("continue-section");
+
+  const tbrSection =
+    document.getElementById("tbr-section");
+
   const libraryEmpty =
     document.getElementById("library-empty");
 
@@ -861,6 +870,18 @@
 
 
     revokeCoverUrls();
+
+    const hasBooks =
+      books.length > 0;
+
+    homeEmpty.hidden =
+      hasBooks;
+
+    continueSection.hidden =
+      !hasBooks;
+
+    tbrSection.hidden =
+      !hasBooks;
 
 
     const reading =
