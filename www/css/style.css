@@ -929,3 +929,23 @@ html, body {
   padding: 30px 10px;
 
 }
+
+/* Bottom navigation icons */
+.bottom-nav-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 9px 12px;
+}
+
+.bottom-nav-btn svg {
+  width: 21px;
+  height: 21px;
+  fill: currentColor;
+}
+
+.bottom-nav-btn span {
+  line-height: 1;
+}
