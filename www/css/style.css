@@ -394,6 +394,7 @@ html, body {
 
   display: flex;
   align-items: flex-end;
+  flex-wrap: nowrap;
 
   min-height: 210px;
 
