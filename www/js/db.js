@@ -37,21 +37,66 @@
     });
   }
 
-  async function updateBook(id, patch) {
-    const store = await tx("readwrite");
+    async function updateBook(id, patch) {
+    const db = await open();
+    const transaction = db.transaction(STORE, "readwrite");
+    const store = transaction.objectStore(STORE);
+
     return new Promise((resolve, reject) => {
+      let result = null;
+
+      transaction.oncomplete = () => {
+        resolve(result);
+      };
+
+      transaction.onerror = () => {
+        reject(
+          transaction.error ||
+          new Error("IndexedDB update failed")
+        );
+      };
+
+      transaction.onabort = () => {
+        reject(
+          transaction.error ||
+          new Error("IndexedDB update aborted")
+        );
+      };
+
       const getReq = store.get(id);
+
       getReq.onsuccess = () => {
         const existing = getReq.result;
-        if (!existing) return resolve(null);
-        const updated = Object.assign(existing, patch);
-        const putReq = store.put(updated);
-        putReq.onsuccess = () => resolve(updated);
-        putReq.onerror = () => reject(putReq.error);
+
+        if (!existing) {
+          result = null;
+          return;
+        }
+
+        const updated =
+          Object.assign(existing, patch);
+
+        result = updated;
+
+        const putReq =
+          store.put(updated);
+
+        putReq.onerror = () => {
+          reject(
+            putReq.error ||
+            new Error("IndexedDB put failed")
+          );
+        };
       };
-      getReq.onerror = () => reject(getReq.error);
+
+      getReq.onerror = () => {
+        reject(
+          getReq.error ||
+          new Error("IndexedDB get failed")
+        );
+      };
     });
-  }
+    }
 
   async function getBook(id) {
     const store = await tx("readonly");
