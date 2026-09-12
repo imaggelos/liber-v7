@@ -949,3 +949,46 @@ html, body {
 .bottom-nav-btn span {
   line-height: 1;
 }
+
+/* =========================================
+   HOME EMPTY STATE
+   ========================================= */
+
+.home-empty {
+  min-height: 60vh;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+
+  padding: 32px 24px;
+}
+
+.home-empty svg {
+  width: 64px;
+  height: 64px;
+
+  fill: var(--on-surface-dim);
+
+  margin-bottom: 14px;
+}
+
+.home-empty h2 {
+  margin: 0 0 8px;
+
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.home-empty p {
+  margin: 0;
+
+  color: var(--on-surface-dim);
+
+  font-size: 13px;
+  font-weight: 700;
+}
