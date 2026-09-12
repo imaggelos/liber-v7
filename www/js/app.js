@@ -53,6 +53,7 @@
   let settingsBook = null;
   let selectedCover = null;
   let settingsCoverUrl = null;
+  let savingSettings = false;
 
   let readerTheme =
     localStorage.getItem("liber-reader-theme") || "dark";
@@ -1083,11 +1084,20 @@
      SAVE SETTINGS
      ================================ */
 
-  async function saveBookSettings() {
+    async function saveBookSettings() {
 
-    if (!settingsBook) {
+    if (!settingsBook || savingSettings) {
       return;
     }
+
+    savingSettings = true;
+
+    const saveButton =
+      document.getElementById(
+        "settings-save"
+      );
+
+    saveButton.disabled = true;
 
 
     const selectedStatus =
@@ -1115,21 +1125,42 @@
     };
 
 
-    if (selectedCover) {
+        if (selectedCover) {
+
+      /*
+       * Store a plain Blob rather than the transient File object returned
+       * by the Android picker.
+       */
+      const coverBuffer =
+        await selectedCover.arrayBuffer();
 
       patch.cover =
-        selectedCover;
+        new Blob(
+          [coverBuffer],
+          {
+            type:
+              selectedCover.type ||
+              "image/jpeg"
+          }
+        );
 
     }
 
+    try {
 
-    await LiberDB.updateBook(
-      settingsBook.id,
-      patch
-    );
+      await LiberDB.updateBook(
+        settingsBook.id,
+        patch
+      );
 
+      closeSettings();
 
-    closeSettings();
+    } finally {
+
+      savingSettings = false;
+      saveButton.disabled = false;
+
+    }
 
 
     await renderLibrary();
