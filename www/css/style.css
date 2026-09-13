@@ -954,6 +954,10 @@ html, body {
    HOME EMPTY STATE
    ========================================= */
 
+.home-empty[hidden] {
+  display: none;
+}
+
 .home-empty {
   min-height: 60vh;
 
