@@ -804,7 +804,10 @@
     const availableWidth =
       Math.max(
         1,
-        libraryBookshelf.clientWidth - 16
+        (
+          allLibrary.clientWidth ||
+          window.innerWidth
+        ) - 32
       );
 
     const booksPerRow =
@@ -944,13 +947,25 @@
   }
 
 
-  function showAllLibrary() {
+    function showAllLibrary() {
 
     homeContent.hidden =
       true;
 
     allLibrary.hidden =
       false;
+
+    navHome.classList.remove(
+      "active"
+    );
+
+    navLibrary.classList.add(
+      "active"
+    );
+
+    renderLibrary();
+
+  }
 
     navHome.classList.remove(
       "active"
