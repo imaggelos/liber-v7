@@ -1178,14 +1178,40 @@
 
     }
 
-    try {
+        try {
 
-      await LiberDB.updateBook(
-        settingsBook.id,
-        patch
-      );
+      const updated =
+        await LiberDB.updateBook(
+          settingsBook.id,
+          patch
+        );
+
+      if (!updated) {
+
+        throw new Error(
+          "Book could not be found"
+        );
+
+      }
+
+      await renderLibrary();
 
       closeSettings();
+
+      showToast(
+        "Book updated"
+      );
+
+    } catch (error) {
+
+      console.error(
+        "Liber: failed to save book settings",
+        error
+      );
+
+      showToast(
+        "Couldn't save book changes"
+      );
 
     } finally {
 
@@ -1193,14 +1219,6 @@
       saveButton.disabled = false;
 
     }
-
-
-    await renderLibrary();
-
-
-    showToast(
-      "Book updated"
-    );
 
   }
 
