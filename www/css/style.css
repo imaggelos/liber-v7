@@ -342,12 +342,23 @@ html, body {
   height: 100%;
 }
 
+.home-shelf .book-card {
+  min-width: 0;
+  height: 100%;
+  position: relative;
+  padding-bottom: 9px;
+}
+
 .home-shelf .book-title {
-  min-height: 2.6em;
+  min-height: 0;
 }
 
 .home-shelf .book-progress {
-  margin-top: auto;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin-top: 0;
 }
 
 
@@ -472,6 +483,11 @@ html, body {
  * Keep the title readable but compact.
  */
 
+.bookshelf-row .book-card {
+  position: relative;
+  padding-bottom: 9px;
+}
+
 .bookshelf-row .book-title {
   font-size: 11px;
 
@@ -479,13 +495,17 @@ html, body {
 
   line-height: 1.25;
 
-  /*
-   * Every title gets exactly two lines of space.
-   * Short titles simply leave the second line empty.
-   */
-  min-height: 2.5em;
+  min-height: 0;
 }
 
+.bookshelf-row .book-progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  margin-top: 0;
+}
 
 /*
  * Author on bookshelf.
@@ -496,16 +516,10 @@ html, body {
 
   margin-top: 2px;
 
-  /*
-   * Reserve one line for the author on every card.
-   */
-  min-height: 1.2em;
-
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
 
 /*
  * The bookshelf should actually fit
