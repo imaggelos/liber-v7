@@ -478,6 +478,12 @@ html, body {
   margin-top: 6px;
 
   line-height: 1.25;
+
+  /*
+   * Every title gets exactly two lines of space.
+   * Short titles simply leave the second line empty.
+   */
+  min-height: 2.5em;
 }
 
 
@@ -489,6 +495,15 @@ html, body {
   font-size: 9px;
 
   margin-top: 2px;
+
+  /*
+   * Reserve one line for the author on every card.
+   */
+  min-height: 1.2em;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 
