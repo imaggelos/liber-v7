@@ -475,27 +475,47 @@
       "book-cover";
 
 
-    if (book.cover) {
+        if (book.cover) {
 
       const img =
-        document.createElement("img");
-
-      const objectUrl =
-        URL.createObjectURL(
-          book.cover
+        document.createElement(
+          "img"
         );
 
-      coverObjectUrls.push(
-        objectUrl
-      );
+      /*
+       * New covers are stored as data URLs.
+       * Older books may still have Blob covers.
+       */
+      if (
+        typeof book.cover ===
+        "string"
+      ) {
 
-      img.src =
-        objectUrl;
+        img.src =
+          book.cover;
+
+      } else {
+
+        const objectUrl =
+          URL.createObjectURL(
+            book.cover
+          );
+
+        coverObjectUrls.push(
+          objectUrl
+        );
+
+        img.src =
+          objectUrl;
+
+      }
 
       img.alt =
         book.title;
 
-      cover.appendChild(img);
+      cover.appendChild(
+        img
+      );
 
     } else {
 
@@ -1007,20 +1027,36 @@
     }
 
 
-    settingsCoverUrl =
-      URL.createObjectURL(
-        blob
-      );
-
-
-    const img =
+        const img =
       document.createElement(
         "img"
       );
 
-    img.src =
-      settingsCoverUrl;
+    /*
+     * Covers may be either:
+     * - an existing Blob
+     * - a newly saved data URL
+     */
+    if (
+      typeof blob ===
+      "string"
+    ) {
 
+      img.src =
+        blob;
+
+    } else {
+
+      settingsCoverUrl =
+        URL.createObjectURL(
+          blob
+        );
+
+      img.src =
+        settingsCoverUrl;
+
+    }
+    
     img.alt =
       "Book cover";
 
@@ -1158,18 +1194,45 @@
        * convert it to a plain Blob before
        * sending it to IndexedDB.
        */
-      if (selectedCover) {
+            if (selectedCover) {
 
-        const coverBuffer =
-          await selectedCover.arrayBuffer();
-
+        /*
+         * Store the selected cover as a data URL
+         * rather than a Blob. This avoids the
+         * IndexedDB/Android cover-saving problem.
+         */
         patch.cover =
-          new Blob(
-            [coverBuffer],
-            {
-              type:
-                selectedCover.type ||
-                "image/jpeg"
+          await new Promise(
+            (resolve, reject) => {
+
+              const reader =
+                new FileReader();
+
+              reader.onload =
+                () => {
+
+                  resolve(
+                    reader.result
+                  );
+
+                };
+
+              reader.onerror =
+                () => {
+
+                  reject(
+                    reader.error ||
+                    new Error(
+                      "Could not read cover"
+                    )
+                  );
+
+                };
+
+              reader.readAsDataURL(
+                selectedCover
+              );
+
             }
           );
 
