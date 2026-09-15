@@ -1106,9 +1106,12 @@
      SAVE SETTINGS
      ================================ */
 
-    async function saveBookSettings() {
+      async function saveBookSettings() {
 
-    if (!settingsBook || savingSettings) {
+    if (
+      !settingsBook ||
+      savingSettings
+    ) {
       return;
     }
 
@@ -1122,59 +1125,62 @@
     saveButton.disabled = true;
 
 
-    const selectedStatus =
-      document.querySelector(
-        'input[name="book-status"]:checked'
-      );
+    try {
 
-
-    const patch = {
-
-      title:
-        settingsTitle.value.trim() ||
-        settingsBook.title,
-
-      author:
-        settingsAuthor.value.trim(),
-
-      status:
-        selectedStatus
-          ? selectedStatus.value
-          : normalizeStatus(
-              settingsBook
-            )
-
-    };
-
-
-        if (selectedCover) {
-
-      /*
-       * Store a plain Blob rather than the transient File object returned
-       * by the Android picker.
-       */
-      const coverBuffer =
-        await selectedCover.arrayBuffer();
-
-      patch.cover =
-        new Blob(
-          [coverBuffer],
-          {
-            type:
-              selectedCover.type ||
-              "image/jpeg"
-          }
+      const selectedStatus =
+        document.querySelector(
+          'input[name="book-status"]:checked'
         );
 
-    }
 
-        try {
+      const patch = {
+
+        title:
+          settingsTitle.value.trim() ||
+          settingsBook.title,
+
+        author:
+          settingsAuthor.value.trim(),
+
+        status:
+          selectedStatus
+            ? selectedStatus.value
+            : normalizeStatus(
+                settingsBook
+              )
+
+      };
+
+
+      /*
+       * If the user picked a new cover,
+       * convert it to a plain Blob before
+       * sending it to IndexedDB.
+       */
+      if (selectedCover) {
+
+        const coverBuffer =
+          await selectedCover.arrayBuffer();
+
+        patch.cover =
+          new Blob(
+            [coverBuffer],
+            {
+              type:
+                selectedCover.type ||
+                "image/jpeg"
+            }
+          );
+
+      }
+
 
       const updated =
         await LiberDB.updateBook(
           settingsBook.id,
           patch
         );
+
 
       if (!updated) {
 
@@ -1184,13 +1190,21 @@
 
       }
 
+
+      /*
+       * Re-read the database so the UI
+       * displays exactly what was saved.
+       */
       await renderLibrary();
 
+
       closeSettings();
+
 
       showToast(
         "Book updated"
       );
+
 
     } catch (error) {
 
@@ -1203,10 +1217,14 @@
         "Couldn't save book changes"
       );
 
+
     } finally {
 
-      savingSettings = false;
-      saveButton.disabled = false;
+      savingSettings =
+        false;
+
+      saveButton.disabled =
+        false;
 
     }
 
