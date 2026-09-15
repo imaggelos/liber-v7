@@ -598,18 +598,19 @@
       title
     );
 
-    if (book.author) {
-
-      card.appendChild(
-        author
-      );
-
-    }
+        /*
+     * Always keep an author slot.
+     * This keeps the progress bars aligned even
+     * when one title takes one line and another
+     * takes two.
+     */
+    card.appendChild(
+      author
+    );
 
     card.appendChild(
       progress
     );
-
 
     /* ============================
        NORMAL TAP
