@@ -928,7 +928,7 @@
      HOME / LIBRARY NAVIGATION
      ================================ */
 
-  function showHome() {
+    function showHome() {
 
     homeContent.hidden =
       false;
@@ -947,7 +947,7 @@
   }
 
 
-    function showAllLibrary() {
+  function showAllLibrary() {
 
     homeContent.hidden =
       true;
@@ -964,16 +964,6 @@
     );
 
     renderLibrary();
-
-  }
-
-    navHome.classList.remove(
-      "active"
-    );
-
-    navLibrary.classList.add(
-      "active"
-    );
 
   }
 
